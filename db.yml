@@ -1,0 +1,37 @@
+version: "3.5"
+services:
+  mongo-db-service:
+    image: mongo
+    container_name: mongodb-only-container
+    volumes:
+      - ./data/db:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: mongo-db
+      MONGO_INITDB_ROOT_USERNAME: mongo-usr
+      MONGO_INITDB_ROOT_PASSWORD: mongo-psw
+    ports:
+      - 27017:27017
+    command: [--auth]
+    # volumes:
+    #   - ./database/mongodb/scripts/001_users.js:/docker-entrypoint-initdb.d/001_users.js:ro
+    #   - ./database/mongodb/data/:/data/db
+    tty: true
+    restart: always
+  mongo-express-service:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mongo-usr
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mongo-psw
+      ME_CONFIG_MONGODB_URL: mongodb://mongo-usr:mongo-psw@mongo-db-service:27017/
+# Somme commands
+#    docker rm -f mongodb-only-container
+#    docker run  -p 27017:27017 --name mongodb-only-container -d mongo --auth
+
+#    docker exec -it mongodb-only-container mongo mongo-db
+#    db.createUser({ user: 'mongo-usr', pwd: 'mongo-psw', roles: [ { role: "userAdminAnyDatabase", db: "mongo-db" } ] });
+
+#    docker exec -it mongodb-only-container mongo admin
+#    db.createUser({ user: 'mongo-usr', pwd: 'mongo-psw', roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] });
